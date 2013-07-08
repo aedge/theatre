@@ -1,0 +1,197 @@
+body {
+	/*#EDEBEB;*/
+	background-color: #EDEBEB;
+	background: -moz-linear-gradient(top, #dedede, #EDEBEB 8%);
+	background: -webkit-gradient(linear, 0 0, 0 8%, from(#dedede), to(#EDEBEB)); 
+	background-attachment:fixed;
+	height:100%;
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+#divLoginBox {
+	margin-top: 100px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 800px;
+	height: 400px;
+	background-color: #19042D;
+	webkit-gradient(linear, 0 0, 0 100%, from(#4B365F), to(#2D1841));
+	background: -moz-linear-gradient(top, #4B365F, #2D1841);
+	border: 2px solid #19042D;
+	border-radius: 25px;
+	box-shadow: 10px 10px 5px #888888;	
+	padding: 0px;
+
+}
+
+#divLoginForm {
+	float: right;
+	width: 49%;
+	padding: 0px;
+}
+
+#divLoginHeader {
+	float: left;
+	width: 49%;	
+	height: 400px;
+	text-align: left;
+	margin: 0px;
+
+}
+
+#divLoginHeader h1 {
+	color: #F8F8F8 ;
+	text-shadow: 5px 5px 5px #000000;	
+	font-size: 42pt;
+	padding-left: 25px;
+	margin-top: 25%;
+	margin-bottom: 25%;
+}
+
+.fieldSetLogin {
+	float: right;
+	margin-right: 15px;
+	border: none;
+	margin-top: 25%;
+	margin-bottom: 25%;
+}
+
+.fieldSetLogin label {
+	color: #F8F8F8;
+	font-family: Verdana, Geneva, sans-serif;
+	display: block;
+	padding-top: 10px;
+	padding-bottom: 5px;
+}
+
+.fieldSetLogin input {
+	font-family: Verdana, Geneva, sans-serif;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	background-color: #F8F8F8;
+	border-radius: 5px;
+	width: 200px;
+}
+
+.fieldSetLogin button {
+	float: right;	
+	color: #F8F8F8;
+	border: solid 2px #19042D;
+	background-color: #19042D;
+	font-family: Verdana, Geneva, sans-serif;
+	border-radius: 5px;
+	height: 2.5em;
+	text-transform: uppercase;
+	padding: 1px;
+	margin-left: 10px;
+	width: 75px;
+}
+
+#spnErrors {
+	color: white;
+}
+
+#divHeaderBar { 
+	width: 100%;
+	height: 50px;
+	background-color: #4B365F;
+	webkit-gradient(linear, 0 0, 0 100%, from(#4B365F), to(#2D1841));
+	background: -moz-linear-gradient(top, #4B365F, #2D1841);
+	border: 2px solid #4B365F;
+	border-radius: 5px;
+	padding: 0px;
+}
+
+#divHeaderBar h1 {
+	color: #F8F8F8 ;
+	font-size: 18pt;
+	padding-left: 10px;	
+	display: inline;
+	line-height: 50px;
+}
+
+#divHeaderBar a{	
+	color: #F8F8F8;	
+	height: 100%;	
+	width: 10%;	
+	float: right;
+	display: inline;
+	line-height: 50px;
+	text-align: center;
+}
+
+#divHeaderBar a.selected{	
+	background-color: #725290;	
+	webkit-gradient(linear, 0 0, 0 100%, from(#19042D), to(#2D1841));
+	background: -moz-linear-gradient(top, #19042D, #2D1841);
+	height: 100%;	
+	width: 10%;	
+	float: right;
+	display: inline;
+	line-height: 50px;
+	text-align: center;
+}
+
+#divHeaderBar a:hover {	
+	background-color: #583f70;	
+	webkit-gradient(linear, 0 0, 0 100%, from(#2D1841), to(#260644));
+	background: -moz-linear-gradient(top, #2D1841, #260644);
+	color: #FFFFFF;
+	height: 100%;	
+	width: 10%;	
+	float: right;
+	display: inline;
+	line-height: 50px;
+	text-align: center;
+	text-decoration: none;
+}
+
+
+#divFooter {
+	width: 100%;
+	height: 25px;
+	background-color: #4B365F;
+	webkit-gradient(linear, 0 0, 0 100%, from(#4B365F), to(#2D1841));
+	background: -moz-linear-gradient(top, #4B365F, #2D1841);
+	border: 2px solid #4B365F;
+	border-radius: 5px;
+	padding: 0px;
+	font-size: 8pt;
+}
+
+#divFooter a{
+	color: #F8F8F8;	
+	height: 100%;	
+	width: 5%;
+	float: right;
+	display: inline;
+	line-height: 25px;
+	text-align: center;
+	margin-right: 5px;
+}
+
+#divFooter a:hover {	
+	background-color: #583f70;	
+	webkit-gradient(linear, 0 0, 0 100%, from(#2D1841), to(#260644));
+	background: -moz-linear-gradient(top, #2D1841, #260644);
+	color: #FFFFFF;
+	height: 100%;	
+	width: 5%;
+	float: right;
+	display: inline;
+	line-height: 25px;
+	text-align: center;
+	text-decoration: none;
+	margin-right: 5px;
+}
+
+#divFooter span{
+	color: #F8F8F8;	
+	height: 100%;	
+	float: left;
+	display: inline;
+	line-height: 25px;
+	text-align: center;
+	padding: 0px;
+	margin-left: 5px;
+}
