@@ -1,19 +1,15 @@
-
 <?php
 Class Address extends CI_Model
 {
- function getAddresses()
+ function getAddresses($option)
  {
-   $this -> db -> select('*');
-   $this -> db -> from('address');
-   $this -> db -> from('member');
-   $this -> db -> where('address.addressid', 'member.addressid');
-   $this -> db -> where('member.active', 'true');
-   
-   $query = $this -> db -> get();
-
+   if($option == "noemail"){
+		$query = $this -> db -> query('SELECT distinct address.* FROM member, address where member.active and member.email = "" and member.addressid = address.addressid');
+   } else {
+		$query = $this -> db -> query('SELECT distinct address.* FROM member, address where member.active and member.addressid = address.addressid');
+   }
+  
    return $query->result();
  }
 }
 ?>
-

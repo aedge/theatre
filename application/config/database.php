@@ -49,12 +49,13 @@ $active_group = 'default';
 $active_record = TRUE;
 
 $db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'theatre';
-$db['default']['password'] = 'suttonarts';
-$db['default']['database'] = 'theatre';
+$db['default']['username'] = 'andrewed_theatre';
+$db['default']['password'] = 'Sutt0n4rts';
+$db['default']['database'] = 'andrewed_theatre';
 $db['default']['dbdriver'] = 'mysql';
+$db['default']['port']     = "3306"; 
 $db['default']['dbprefix'] = '';
-$db['default']['pconnect'] = TRUE;
+$db['default']['pconnect'] = FALSE;
 $db['default']['db_debug'] = TRUE;
 $db['default']['cache_on'] = FALSE;
 $db['default']['cachedir'] = '';
@@ -63,7 +64,6 @@ $db['default']['dbcollat'] = 'utf8_general_ci';
 $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
-
 
 /* End of file database.php */
 /* Location: ./application/config/database.php */

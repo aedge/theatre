@@ -17,6 +17,7 @@ class Main extends CI_Controller {
 		$this->load->library('system_parameter');
 		$this->load->library('PDF_Label',array('format' => '3422'));
 		$this->load->model('address','',TRUE);
+		$this->load->model('totals','',TRUE);
  
     }
  
@@ -57,11 +58,12 @@ class Main extends CI_Controller {
 	    }
 		
         $crud = new grocery_CRUD();
-		
+
+	
 		$crud->set_Subject('Member');
 		$crud->set_table('member');
 		
-		$crud->columns('membernum','title','firstname','lastname','phone','mobile','email','agegroup','addressid','Interests','expirydate','paymenttype','amountpaid','active','blacklisted');
+		$crud->columns('membernum','title','initials','firstname','lastname','phone','mobile','email','agegroup','addressid','Interests','expirydate','paymenttype','amountpaid','active','blacklisted');
 		
 		$crud->display_as('lastname','Last Name');
 		$crud->display_as('firstname','First Name');
@@ -73,31 +75,26 @@ class Main extends CI_Controller {
 		$crud->display_as('paymenttype','Payment Type');
 		$crud->display_as('amountpaid','Amount Paid');
 				
-		$crud->set_relation('addressid','address','{housename} {addressline1}');
+		$crud->set_relation('addressid','address','{addressline1}');
 		$crud->display_as('addressid','Address');		
 		$crud->set_relation_n_n('Interests','memberinterest','interest','memberid','interestid','description');
-		$crud->add_fields('firstname','lastname','title','phone','mobile','email','agegroup','addressid','Interests');
+		$crud->add_fields('membernum','title','initials','firstname','lastname','phone','mobile','email','agegroup','addressid','Interests','expirydate','active');
 		$crud->required_fields('firstname','lastname','agegroup','addressid','phone','title');
 		
-		$crud->callback_before_insert(function($post_array){
-			$currentYear = strftime("%Y");			
-			$this -> db -> select('value');
-			$this -> db -> from('systemparameter');
-			$this -> db -> where('section', annual_member_counter);
-			$this -> db -> where('key', $currentYear);
-			$this -> db -> limit(1);
-
-			$query = $this -> db -> get();
-			$nextMemberNumber = $query->row()->value;
-			$nextMemberNumber = $nextMemberNumber + 1;
-			
-			$this -> db -> query("insert into systemparameter (`section`,`key`,`value`) values ('annual_member_counter','$currentYear','$nextMemberNumber') on duplicate key update `value`='$nextMemberNumber'");
-			
-			$post_array["membernum"] = $currentYear . "-" . $nextMemberNumber;
+		$crud->callback_before_insert(array($this,'member_insert'));
+		$crud->callback_add_field('expirydate', array($this, 'field_expirydate_add'));
+		$crud->field_type('membernum', 'invisible');				
 		
-			return $post_array;
-		});
 		$selected = "Members";
+				
+		if( $crud->getState() == 'add' ) { //add these only in add form
+			$crud->set_css('assets/grocery_crud/css/ui/simple/'.grocery_CRUD::JQUERY_UI_CSS);
+			$crud->set_css('assets/fancybox/jquery.fancybox.css?v=2.0.6');
+			$crud->set_js('assets/grocery_crud/js/'.grocery_CRUD::JQUERY);
+			$crud->set_js('assets/grocery_crud/js/jquery_plugins/ui/'.grocery_CRUD::JQUERY_UI_JS);
+			$crud->set_js('assets/grocery_crud/js/jquery_plugins/config/jquery.datepicker.config.js');
+			$crud->set_js('assets/fancybox/jquery.fancybox.pack.js?v=2.0.6');
+		}
 
         $output = $crud->render();				
 		$output->accessLevel = $accessLevel;
@@ -196,12 +193,9 @@ class Main extends CI_Controller {
 		$crud->display_as('accesslevel','Access Level');
 		$crud->display_as('username','Username');
 		$crud->display_as('password','Password');
-		
-		$crud->callback_before_insert(function($post_array){
-			$post_array["password"] = md5($post_array["password"]);
-		
-			return $post_array;
-		});
+		$crud->field_type('password', 'password');	
+		$crud->field_type('accesslevel', 'enum', array('1','5','100'));
+		$crud->callback_before_insert(array($this,'user_insert'));
 		
 		$selected = "Users";
 
@@ -210,9 +204,9 @@ class Main extends CI_Controller {
         $this->_render_output($output);     
     }
 	
-	public function labels() {
+	public function labels($option) {
 	
-		$addresses = $this->address->getAddresses();
+		$addresses = $this->address->getAddresses($option);
 
 		$this->pdf_label->AddPage();		
 		
@@ -225,10 +219,147 @@ class Main extends CI_Controller {
 		$this->pdf_label->Output();		
 	}
 	
-	function _render_output($output = null)
+	public function paid_totals() {
+		$result = $this->totals->getPaidTotals();
+		$html = "";
+		if($result){				
+			$html = '<div style="width: 200px; height: 200px; " class="popup" >';
+			$html .= '<table width="100%"><tr><th align="left">Payment Type</th><th align="left">Total</th></tr>';
+			foreach($result as $row){
+				if($row->paymenttype != ""){
+					$html .= '<tr><td align="left">'. $row->paymenttype . '</td><td align="left">' . $row->amountpaid . '</td></tr>';
+				}				
+			}
+			$html .= '</table></div>';
+		}
+		
+		echo $html;
+		
+	}
+	
+	public function address_quick_add() {
+	
+		$javascript = '<script>
+						var title = $(\'#field-title\').val();
+						var initial = $(\'#field-initials\').val();
+						var lastname = $(\'#field-lastname\').val();
+						var toSuggest = title; 
+						var toSuggest = (toSuggest == "")?toSuggest + initial:toSuggest + " " + initial;
+						var toSuggest = (toSuggest == "")?toSuggest + lastname:toSuggest + " " + lastname;
+						$(\'#qa-field-printname\').val(toSuggest);
+					  </script>';
+
+		$html = '<div style="width: 500px; height: 400px;" id="div_quick_add" >
+				 <div class="form-field-box odd">
+				 <div class="form-display-as-box">To*: </div>
+				 <div class="form-input-box"><input type="text" name="printname" id="qa-field-printname"></div>
+				 </div>
+				 <div class="form-field-box even">
+				 <div class="form-display-as-box">House Name:</div>
+				 <div class="form-input-box"><input type="text" name="housename" id="qa-field-housename"></div>
+				 </div>
+				 <div class="form-field-box odd">
+				 <div class="form-display-as-box">Line 1*: </div>
+				 <div class="form-input-box"><input type="text" name="addressline1" id="qa-field-addressline1"></div>
+				 </div>
+				 <div class="form-field-box even">
+				 <div class="form-display-as-box">Line 2: </div>
+				 <div class="form-input-box"><input type="text" name="addressline2" id="qa-field-addressline2"></div>
+				 </div>
+				 <div class="form-field-box odd">
+				 <div class="form-display-as-box">Line 3: </div>
+				 <div class="form-input-box"><input type="text" name="addressline3" id="qa-field-addressline3"></div>
+				 </div>
+				 <div class="form-field-box even">
+				 <div class="form-display-as-box">Line 4: </div>
+				 <div class="form-input-box"><input type="text" name="addressline4" id="qa-field-addressline4"></div>
+				 </div>
+				 <div class="form-field-box odd">
+				 <div class="form-display-as-box">Postcode*: </div>
+				 <div class="form-input-box"><input type="text" name="postcode" id="qa-field-postcode"></div>
+				 </div>
+				 <div style="padding: 5px;"><span id="quick_add_message"></span></div>
+				 <div style="padding: 5px;"><input class="btn btn-large" type="button" value="Save" onClick="do_quick_add(\'' . site_url() . '/main/quick_add_save/\');" /></div>
+				 </div>';
+
+		echo $html.$javascript;
+		exit;		
+	}
+	
+	public function quick_add_save()
+	{
+		//POST ITEMS
+		$printname = $this->input->post('printname', true);
+		$housename = $this->input->post('housename', true);
+		$address1  = $this->input->post('address1', true);
+		$address2  = $this->input->post('address2', true);
+		$address3  = $this->input->post('address3', true);
+		$address4  = $this->input->post('address4', true);
+		$postcode  = $this->input->post('postcode', true);
+
+		//SAVE TO DATABASE
+		$data = array(
+					'printname' => $printname,
+					'housename' => $housename,
+					'addressline1' => $address1,
+					'addressline2' => $address2,
+					'addressline3' => $address3,
+					'addressline4' => $address4,
+					'postcode' => $postcode,				
+					  );
+					  
+		$this->db->insert('address', $data);
+		echo $this->db->insert_id();
+	}
+	
+	function member_insert($post_array){
+		$currentYear = strftime("%Y");			
+		$this -> db -> select('value');
+		$this -> db -> from('systemparameter');
+		$this -> db -> where('section', 'annual_member_counter');
+		$this -> db -> where('key', $currentYear);
+		$this -> db -> limit(1);
+
+		$query = $this -> db -> get();
+		$nextMemberNumber = $query->row()->value;
+		$nextMemberNumber = $nextMemberNumber + 1;
+		
+		$this -> db -> query("insert into systemparameter (`section`,`key`,`value`) values ('annual_member_counter','$currentYear','$nextMemberNumber') on duplicate key update `value`='$nextMemberNumber'");
+		
+		$post_array["membernum"] = $currentYear . "-" . sprintf("%04d", $nextMemberNumber);
+	
+		return $post_array;
+	}
+	
+	function user_insert($post_array){
+		if(!empty($post_array['password'])){
+			$password = $post_array["password"];
+			$password = md5($password);
+			$post_array["password"] = $password;
+		} else {
+			unset($post_array['password']);
+		}
+		
+		return $post_array;
+	}
+	
+	function field_expirydate_add($value = '') 
+	{
+		$defaultdate = '';
+		if(date('m') >= 4){
+			$defaultdate = '30/06/' . (date('Y') + 1);
+		} else {
+			$defaultdate = '30/06/' . (date('Y'));
+		}			
+		$value = !empty($value) ? $value : $defaultdate;
+		$return = '<input id="field-expirydate" name="expirydate" type="text" value="'. $value .'" maxlength="10" class="datepicker-input" /> ';		
+        $return .= '<a class="datepicker-input-clear" tabindex="-1">Clear</a> (dd/mm/yyyy)';
+        return $return;
+	}
+	
+	
+    function _render_output($output = null)
     {
         $this->load->view('theatre_table_template.php',$output);    
     }
 }
-
- 

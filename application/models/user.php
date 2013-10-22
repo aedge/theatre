@@ -1,4 +1,3 @@
-
 <?php
 Class User extends CI_Model
 {
@@ -23,4 +22,3 @@ Class User extends CI_Model
  }
 }
 ?>
-

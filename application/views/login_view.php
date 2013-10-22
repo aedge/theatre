@@ -16,7 +16,7 @@
 			 <input type="text" size="20" id="username" name="username"/>
 			 <label for="password">Password:</label>
 			 <input type="password" size="20" id="password" name="password"/>
-			 <button type="submit" name="login" value="login">Login</button>
+			 <button type="submit" name="login" value="login" id="loginBtn">Login</button>
 			 <span id="spnErrors"><?php echo validation_errors(); ?></span>
 			</fieldset>
 		 </form>

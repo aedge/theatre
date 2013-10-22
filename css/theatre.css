@@ -87,6 +87,20 @@ body {
 	width: 75px;
 }
 
+#loginBtn {
+	float: right;	
+	color: #F8F8F8;
+	border: solid 2px #19042D;
+	background-color: #19042D;
+	font-family: Verdana, Geneva, sans-serif;
+	border-radius: 5px;
+	height: 2.5em;
+	text-transform: uppercase;
+	padding: 1px;
+	margin-left: 10px;
+	width: 75px;
+}
+
 #spnErrors {
 	color: white;
 }
@@ -194,4 +208,35 @@ body {
 	text-align: center;
 	padding: 0px;
 	margin-left: 5px;
+}
+
+.popup {
+	background-color: #19042D;
+	color: white;
+	font-size: 12pt;
+	padding: 10px;
+}
+
+#quick_add_message{
+	color: red;
+	font-size: 10pt;
+}
+
+.labellink {
+	color: white;
+	display: block;
+	padding: 5px;
+	width: 100%;
+}
+
+.labellink:hover{
+	color: lightgrey;
+	display: block;
+	padding: 5px;
+	width: 100%;
+	text-decoration: none;
+}
+
+.popuptitle {
+	font-weight: bold;
 }
