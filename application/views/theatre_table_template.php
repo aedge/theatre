@@ -15,6 +15,30 @@ foreach($css_files as $file): ?>
  
   <title>Sutton Arts Theatre</title>
   <link rel='stylesheet' type='text/css' href='<?php echo base_url()."css/theatre.css"?>' />
+  
+<!-- <link rel="stylesheet" href="<?=base_url()?>assets/fancybox/jquery.fancybox.css?v=2.0.6" type="text/css" media="screen" />
+  <script type="text/javascript" src="<?=base_url()?>assets/fancybox/jquery.fancybox.pack.js?v=2.0.6"></script> -->
+  <script type="text/javascript" src="<?=base_url()?>assets/js/quickadd.js"></script>
+
+  <script type="text/javascript">
+  $(document).ready(function() {
+  
+    $(".fancybox-link").fancybox();
+	$(".fancybox-paid").fancybox({
+		padding: 0
+	});
+	$(".fancybox-labels").fancybox({
+		padding: 0,
+		content: '<div class="popup"><span class="popuptitle">Print labels for? </span><a class="labellink" href="<?= site_url() ?>/main/labels/all" > All Members </a><a class="labellink" href="<?= site_url() ?>/main/labels/noemail" > Members without Email Addresses </a></div>',
+	});
+	
+	//ADD IN A BUTTON TO ADD TO DROPDOWN	
+	$('#addressid_input_box').append('<a href="<?=site_url()?>/main/address_quick_add" class="fancybox-link fancybox.ajax ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" ><span class="ui-button-text">Add</span></a>');	
+
+	
+  });
+  
+</script>
 </head>
 <body>
 <!-- Beginning header -->
@@ -38,7 +62,10 @@ foreach($css_files as $file): ?>
 	<div id="divFooter" ><span>&copy; 2013 Sutton Arts Theatre</span>
 		<a href='<?php echo site_url('main/logout') ?>' >Logout</a> 
 		<?php if($this->router->fetch_method() == "addresses"){
-			echo '<a href='. site_url('main/labels') .' > Labels </a>';
+			echo '<a href="#" class="fancybox-labels"  > Labels </a>';
+		} ?>
+		<?php if($this->router->fetch_method() == "members"){
+			echo '<a href="'. site_url() . '/main/paid_totals" class="fancybox-paid fancybox.ajax" > Paid Totals </a>';
 		} ?>
 	</div>
 <!-- End of Footer -->

@@ -23,6 +23,7 @@ $(function(){
 			'speedOut'		:	200, 
 			'overlayShow'	:	false
 		});		
+		$(".fancybox-link").fancybox();
 	};
 	
 	call_fancybox();

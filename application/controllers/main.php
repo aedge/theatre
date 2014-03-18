@@ -15,7 +15,7 @@ class Main extends CI_Controller {
  
         $this->load->library('grocery_CRUD');
 		$this->load->library('system_parameter');
-		$this->load->library('PDF_Label',array('format' => '3422'));
+		$this->load->library('PDF_Label',array('format' => 'THEATRE1'));
 		$this->load->model('address','',TRUE);
 		$this->load->model('totals','',TRUE);
  
@@ -71,9 +71,11 @@ class Main extends CI_Controller {
 		$crud->display_as('mobile','Mobile Number');
 		$crud->display_as('agegroup','Age Group');
 		$crud->display_as('expirydate','Expiry Date');
-		$crud->display_as('membernum','Membership Number');
-		$crud->display_as('paymenttype','Payment Type');
-		$crud->display_as('amountpaid','Amount Paid');
+		$crud->display_as('membernum','Member Number');
+		$crud->display_as('paymenttype','Pay Type');
+		$crud->display_as('amountpaid','Paid');
+		$crud->display_as('initials','Init');
+		$crud->display_as('blacklisted','Black listed');
 				
 		$crud->set_relation('addressid','address','{addressline1}');
 		$crud->display_as('addressid','Address');		
@@ -83,7 +85,10 @@ class Main extends CI_Controller {
 		
 		$crud->callback_before_insert(array($this,'member_insert'));
 		$crud->callback_add_field('expirydate', array($this, 'field_expirydate_add'));
-		$crud->field_type('membernum', 'invisible');				
+		$crud->field_type('membernum', 'invisible');
+		
+		$crud->add_action('Renew','http://www.grocerycrud.com/assets/uploads/general/smiley.png','member_renew/popup','fancybox-link fancybox.ajax');
+		
 		
 		$selected = "Members";
 				
@@ -206,13 +211,62 @@ class Main extends CI_Controller {
 	
 	public function labels($option) {
 	
+		if($this->session->userdata('logged_in'))
+	    {
+	      $session_data = $this->session->userdata('logged_in');
+	      $data['username'] = $session_data['username'];
+		  $accessLevel = $session_data['accessLevel'];
+	    }
+	    else
+	    {
+	     //If no session, redirect to login page
+	     redirect('login', 'refresh');
+	    }
+	
 		$addresses = $this->address->getAddresses($option);
 
 		$this->pdf_label->AddPage();		
 		
 		// Print labels
 		foreach($addresses as $address) {
-			$text = sprintf("%s\n%s\n%s\n%s %s %s", $address->printname, $address->addressline1, $address->addressline2, $address->addressline3, $address->addressline4, $address->postcode);
+			$addressArray = array();			
+			if(strlen($address->printname) > 30){
+				$andPosition = strrpos($address->printname, "&");
+				array_push($addressArray, substr($address->printname, 0, $andPosition));
+				array_push($addressArray, substr($address->printname, $andPosition));
+			} else {
+				array_push($addressArray, $address->printname);
+			} 
+			
+			if($address->housename != ""){
+				array_push($addressArray, $address->housename);
+			}
+			if($address->addressline1 != ""){
+				array_push($addressArray, $address->addressline1);
+			}
+			if($address->addressline2 != ""){
+				array_push($addressArray, $address->addressline2);
+			}
+			if($address->addressline3 != ""){
+				array_push($addressArray, $address->addressline3);
+			}
+			if($address->addressline4 != ""){
+				array_push($addressArray, $address->addressline4);
+			}
+			
+			do{
+				array_push($addressArray, "");
+			} while(count($addressArray) < 6);
+			
+			for($i=0;$i<count($addressArray);$i++){
+				if($addressArray[$i] == ""){
+					$addressArray[$i] = $address->postcode;
+					$i = count($addressArray);
+				}
+			}		
+			
+			//$text = sprintf("%s\n%s\n%s\n%s", $line1, $line2, $line3, $line4);
+			$text = sprintf("%s\n%s\n%s\n%s\n%s\n%s", $addressArray[0],$addressArray[1],$addressArray[2],$addressArray[3],$addressArray[4],$addressArray[5]);  
 			$this->pdf_label->Add_Label($text);
 		}
 
@@ -220,6 +274,10 @@ class Main extends CI_Controller {
 	}
 	
 	public function paid_totals() {
+		
+		if($this->session->userdata('logged_in'))
+	    {
+	      
 		$result = $this->totals->getPaidTotals();
 		$html = "";
 		if($result){				
@@ -234,6 +292,8 @@ class Main extends CI_Controller {
 		}
 		
 		echo $html;
+	}
+		
 		
 	}
 	
@@ -288,32 +348,75 @@ class Main extends CI_Controller {
 	
 	public function quick_add_save()
 	{
-		//POST ITEMS
-		$printname = $this->input->post('printname', true);
-		$housename = $this->input->post('housename', true);
-		$address1  = $this->input->post('address1', true);
-		$address2  = $this->input->post('address2', true);
-		$address3  = $this->input->post('address3', true);
-		$address4  = $this->input->post('address4', true);
-		$postcode  = $this->input->post('postcode', true);
+	
+		if($this->session->userdata('logged_in'))
+	    {	     
+			//POST ITEMS
+			$printname = $this->input->post('printname', true);
+			$housename = $this->input->post('housename', true);
+			$address1  = $this->input->post('address1', true);
+			$address2  = $this->input->post('address2', true);
+			$address3  = $this->input->post('address3', true);
+			$address4  = $this->input->post('address4', true);
+			$postcode  = $this->input->post('postcode', true);
 
-		//SAVE TO DATABASE
-		$data = array(
-					'printname' => $printname,
-					'housename' => $housename,
-					'addressline1' => $address1,
-					'addressline2' => $address2,
-					'addressline3' => $address3,
-					'addressline4' => $address4,
-					'postcode' => $postcode,				
-					  );
-					  
-		$this->db->insert('address', $data);
-		echo $this->db->insert_id();
+			//SAVE TO DATABASE
+			$data = array(
+						'printname' => $printname,
+						'housename' => $housename,
+						'addressline1' => $address1,
+						'addressline2' => $address2,
+						'addressline3' => $address3,
+						'addressline4' => $address4,
+						'postcode' => $postcode,				
+						  );
+						  
+			$this->db->insert('address', $data);
+			echo $this->db->insert_id();
+		}
+	}
+	
+	public function member_renew() {
+	
+		/*$javascript = '<script>
+						var title = $(\'#field-title\').val();
+						var initial = $(\'#field-initials\').val();
+						var lastname = $(\'#field-lastname\').val();
+						var toSuggest = title; 
+						var toSuggest = (toSuggest == "")?toSuggest + initial:toSuggest + " " + initial;
+						var toSuggest = (toSuggest == "")?toSuggest + lastname:toSuggest + " " + lastname;
+						$(\'#qa-field-printname\').val(toSuggest);
+					  </script>';*/
+
+		$html = '<div style="width: 400px; height: 200px;" id="div_quick_add" >
+				 <div class="form-field-box odd">
+				 <div class="form-display-as-box">Expiry Date: </div>
+				 <div class="form-input-box"><input type="text" name="printname" id="qa-field-printname"></div>
+				 </div>
+				 <div class="form-field-box even">
+				 <div class="form-display-as-box">Payment Type:</div>
+				 <div class="form-input-box"><input type="text" name="housename" id="qa-field-housename"></div>
+				 </div>
+				 <div class="form-field-box odd">
+				 <div class="form-display-as-box">Amount Paid: </div>
+				 <div class="form-input-box"><input id="field-amountpaid" name="amountpaid" type="text" maxlength="10,0" /></div>
+				 </div>
+				 <div style="padding: 5px;"><span id="quick_add_message"></span></div>
+				 <div style="padding: 5px;"><input class="btn btn-large" type="button" value="Save" onClick="do_quick_add(\'' . site_url() . '/main/quick_add_save/\');" /></div>
+				 </div>';
+
+		echo $html.$javascript;
+		exit;		
 	}
 	
 	function member_insert($post_array){
-		$currentYear = strftime("%Y");			
+		$currentYear = strftime("%Y");
+		
+		if(date('m') <= 7){
+			$currentYear = date('Y') - 1;
+		} else {
+			$currentYear = date('Y');
+		}			
 		$this -> db -> select('value');
 		$this -> db -> from('systemparameter');
 		$this -> db -> where('section', 'annual_member_counter');
@@ -356,7 +459,6 @@ class Main extends CI_Controller {
         $return .= '<a class="datepicker-input-clear" tabindex="-1">Clear</a> (dd/mm/yyyy)';
         return $return;
 	}
-	
 	
     function _render_output($output = null)
     {
