@@ -63,7 +63,7 @@ class Main extends CI_Controller {
 		$crud->set_Subject('Member');
 		$crud->set_table('member');
 		
-		$crud->columns('membernum','title','initials','firstname','lastname','phone','mobile','email','agegroup','addressid','Interests','expirydate','paymenttype','amountpaid','active','blacklisted');
+		$crud->columns('membernum','title','initials','firstname','lastname','phone','mobile','email','agegroup','addressid','Interests','expirydate','paymenttype','amountpaid','active');
 		
 		$crud->display_as('lastname','Last Name');
 		$crud->display_as('firstname','First Name');
@@ -87,16 +87,23 @@ class Main extends CI_Controller {
 		$crud->callback_add_field('expirydate', array($this, 'field_expirydate_add'));
 		$crud->field_type('membernum', 'invisible');
 		
-		$crud->add_action('Renew','http://www.grocerycrud.com/assets/uploads/general/smiley.png','member_renew/popup','fancybox-link fancybox.ajax');
+		$crud->add_action('','/theatre/assets/uploads/general/refresh16.png','member_renew/popup','fancybox-link fancybox.ajax');
 		
 		
 		$selected = "Members";
-				
+		
+		$crud->set_css('assets/grocery_crud/css/ui/simple/jquery-ui-1.9.0.custom.min.css');
+		$crud->set_js('assets/grocery_crud/js/'.grocery_CRUD::JQUERY);
+		$crud->set_js('assets/grocery_crud/js/jquery_plugins/ui/'.grocery_CRUD::JQUERY_UI_JS);		
+		$crud->set_css('assets/grocery_crud/themes/flexigrid/css/flexigrid.css');
+		$crud->set_js('assets/grocery_crud/themes/flexigrid/js/jquery.form.js');	
+		$crud->set_js('assets/grocery_crud/themes/flexigrid/js/flexigrid-add.js');
+		$crud->set_css('assets/grocery_crud/css/jquery_plugins/chosen/chosen.css');
+		$crud->set_js('assets/grocery_crud/js/jquery_plugins/jquery.chosen.min.js');
+		$crud->set_js('assets/grocery_crud/js/jquery_plugins/config/jquery.chosen.config.js');		
+		
 		if( $crud->getState() == 'add' ) { //add these only in add form
-			$crud->set_css('assets/grocery_crud/css/ui/simple/'.grocery_CRUD::JQUERY_UI_CSS);
 			$crud->set_css('assets/fancybox/jquery.fancybox.css?v=2.0.6');
-			$crud->set_js('assets/grocery_crud/js/'.grocery_CRUD::JQUERY);
-			$crud->set_js('assets/grocery_crud/js/jquery_plugins/ui/'.grocery_CRUD::JQUERY_UI_JS);
 			$crud->set_js('assets/grocery_crud/js/jquery_plugins/config/jquery.datepicker.config.js');
 			$crud->set_js('assets/fancybox/jquery.fancybox.pack.js?v=2.0.6');
 		}
@@ -265,7 +272,7 @@ class Main extends CI_Controller {
 				}
 			}		
 			
-			//$text = sprintf("%s\n%s\n%s\n%s", $line1, $line2, $line3, $line4);
+			//$text = sprintf("%s/n%s\n%s\n%s", $line1, $line2, $line3, $line4);
 			$text = sprintf("%s\n%s\n%s\n%s\n%s\n%s", $addressArray[0],$addressArray[1],$addressArray[2],$addressArray[3],$addressArray[4],$addressArray[5]);  
 			$this->pdf_label->Add_Label($text);
 		}
@@ -374,39 +381,6 @@ class Main extends CI_Controller {
 			$this->db->insert('address', $data);
 			echo $this->db->insert_id();
 		}
-	}
-	
-	public function member_renew() {
-	
-		/*$javascript = '<script>
-						var title = $(\'#field-title\').val();
-						var initial = $(\'#field-initials\').val();
-						var lastname = $(\'#field-lastname\').val();
-						var toSuggest = title; 
-						var toSuggest = (toSuggest == "")?toSuggest + initial:toSuggest + " " + initial;
-						var toSuggest = (toSuggest == "")?toSuggest + lastname:toSuggest + " " + lastname;
-						$(\'#qa-field-printname\').val(toSuggest);
-					  </script>';*/
-
-		$html = '<div style="width: 400px; height: 200px;" id="div_quick_add" >
-				 <div class="form-field-box odd">
-				 <div class="form-display-as-box">Expiry Date: </div>
-				 <div class="form-input-box"><input type="text" name="printname" id="qa-field-printname"></div>
-				 </div>
-				 <div class="form-field-box even">
-				 <div class="form-display-as-box">Payment Type:</div>
-				 <div class="form-input-box"><input type="text" name="housename" id="qa-field-housename"></div>
-				 </div>
-				 <div class="form-field-box odd">
-				 <div class="form-display-as-box">Amount Paid: </div>
-				 <div class="form-input-box"><input id="field-amountpaid" name="amountpaid" type="text" maxlength="10,0" /></div>
-				 </div>
-				 <div style="padding: 5px;"><span id="quick_add_message"></span></div>
-				 <div style="padding: 5px;"><input class="btn btn-large" type="button" value="Save" onClick="do_quick_add(\'' . site_url() . '/main/quick_add_save/\');" /></div>
-				 </div>';
-
-		echo $html.$javascript;
-		exit;		
 	}
 	
 	function member_insert($post_array){

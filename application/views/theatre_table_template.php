@@ -15,10 +15,9 @@ foreach($css_files as $file): ?>
  
   <title>Sutton Arts Theatre</title>
   <link rel='stylesheet' type='text/css' href='<?php echo base_url()."css/theatre.css"?>' />
-  
-<!-- <link rel="stylesheet" href="<?=base_url()?>assets/fancybox/jquery.fancybox.css?v=2.0.6" type="text/css" media="screen" />
-  <script type="text/javascript" src="<?=base_url()?>assets/fancybox/jquery.fancybox.pack.js?v=2.0.6"></script> -->
   <script type="text/javascript" src="<?=base_url()?>assets/js/quickadd.js"></script>
+  
+
 
   <script type="text/javascript">
   $(document).ready(function() {

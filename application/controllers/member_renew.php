@@ -16,6 +16,7 @@ class member_renew extends CI_Controller {
         $this->load->library('grocery_CRUD');
 		$this->load->library('system_parameter');
 		$this->load->model('user','',TRUE);
+		$this->load->model('member','',TRUE);
  
     }
  
@@ -25,6 +26,7 @@ class member_renew extends CI_Controller {
 	}
 	
 	public function popup($memberid) {
+	
         if($this->session->userdata('logged_in'))
 	    {
 			
@@ -47,13 +49,22 @@ class member_renew extends CI_Controller {
     }
 	
 	public function save() {
+	
+		$memberid    = $this->input->post('memberid');
+		$expirydate  = $this->input->post('expirydate');
+		$paymenttype = $this->input->post('paymenttype');
+		$amountpaid  = $this->input->post('amountpaid');	
+		
+		$this->member->renewMember($memberid, $expirydate, $paymenttype, $amountpaid);
+		
+		redirect('main/members', 'refresh');
 	}
 	
 	private function buildPaymentTypeSelect(){
 		$select = '';
 		$options_array = $this->getPaymentTypeOptions();
 		
-		$select = "<select id='field-paymenttype' name='paymenttype' class='chosen-select' data-placeholder='Select Payment Type'>";
+		$select = "<select id='field-paymenttype' name='paymenttype' class='chosen-select' data-placeholder='Select Payment Type' style='width: 250px !important'>";
 		$options_array = array('' => '') + $options_array;
 				
 		foreach($options_array as $option)
