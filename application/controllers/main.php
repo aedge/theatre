@@ -18,6 +18,7 @@ class Main extends CI_Controller {
 		$this->load->library('PDF_Label',array('format' => 'THEATRE1'));
 		$this->load->model('address','',TRUE);
 		$this->load->model('totals','',TRUE);
+		$this->load->model('member','',TRUE);
  
     }
  
@@ -285,101 +286,20 @@ class Main extends CI_Controller {
 		if($this->session->userdata('logged_in'))
 	    {
 	      
-		$result = $this->totals->getPaidTotals();
-		$html = "";
-		if($result){				
-			$html = '<div style="width: 200px; height: 200px; " class="popup" >';
-			$html .= '<table width="100%"><tr><th align="left">Payment Type</th><th align="left">Total</th></tr>';
-			foreach($result as $row){
-				if($row->paymenttype != ""){
-					$html .= '<tr><td align="left">'. $row->paymenttype . '</td><td align="left">' . $row->amountpaid . '</td></tr>';
-				}				
+			$result = $this->totals->getPaidTotals();
+			$html = "";
+			if($result){				
+				$html = '<div style="width: 200px; height: 200px; " class="popup" >';
+				$html .= '<table width="100%"><tr><th align="left">Payment Type</th><th align="left">Total</th></tr>';
+				foreach($result as $row){
+					if($row->paymenttype != ""){
+						$html .= '<tr><td align="left">'. $row->paymenttype . '</td><td align="left">' . $row->amountpaid . '</td></tr>';
+					}				
+				}
+				$html .= '</table></div>';
 			}
-			$html .= '</table></div>';
-		}
 		
-		echo $html;
-	}
-		
-		
-	}
-	
-	public function address_quick_add() {
-	
-		$javascript = '<script>
-						var title = $(\'#field-title\').val();
-						var initial = $(\'#field-initials\').val();
-						var lastname = $(\'#field-lastname\').val();
-						var toSuggest = title; 
-						var toSuggest = (toSuggest == "")?toSuggest + initial:toSuggest + " " + initial;
-						var toSuggest = (toSuggest == "")?toSuggest + lastname:toSuggest + " " + lastname;
-						$(\'#qa-field-printname\').val(toSuggest);
-					  </script>';
-
-		$html = '<div style="width: 500px; height: 400px;" id="div_quick_add" >
-				 <div class="form-field-box odd">
-				 <div class="form-display-as-box">To*: </div>
-				 <div class="form-input-box"><input type="text" name="printname" id="qa-field-printname"></div>
-				 </div>
-				 <div class="form-field-box even">
-				 <div class="form-display-as-box">House Name:</div>
-				 <div class="form-input-box"><input type="text" name="housename" id="qa-field-housename"></div>
-				 </div>
-				 <div class="form-field-box odd">
-				 <div class="form-display-as-box">Line 1*: </div>
-				 <div class="form-input-box"><input type="text" name="addressline1" id="qa-field-addressline1"></div>
-				 </div>
-				 <div class="form-field-box even">
-				 <div class="form-display-as-box">Line 2: </div>
-				 <div class="form-input-box"><input type="text" name="addressline2" id="qa-field-addressline2"></div>
-				 </div>
-				 <div class="form-field-box odd">
-				 <div class="form-display-as-box">Line 3: </div>
-				 <div class="form-input-box"><input type="text" name="addressline3" id="qa-field-addressline3"></div>
-				 </div>
-				 <div class="form-field-box even">
-				 <div class="form-display-as-box">Line 4: </div>
-				 <div class="form-input-box"><input type="text" name="addressline4" id="qa-field-addressline4"></div>
-				 </div>
-				 <div class="form-field-box odd">
-				 <div class="form-display-as-box">Postcode*: </div>
-				 <div class="form-input-box"><input type="text" name="postcode" id="qa-field-postcode"></div>
-				 </div>
-				 <div style="padding: 5px;"><span id="quick_add_message"></span></div>
-				 <div style="padding: 5px;"><input class="btn btn-large" type="button" value="Save" onClick="do_quick_add(\'' . site_url() . '/main/quick_add_save/\');" /></div>
-				 </div>';
-
-		echo $html.$javascript;
-		exit;		
-	}
-	
-	public function quick_add_save()
-	{
-	
-		if($this->session->userdata('logged_in'))
-	    {	     
-			//POST ITEMS
-			$printname = $this->input->post('printname', true);
-			$housename = $this->input->post('housename', true);
-			$address1  = $this->input->post('address1', true);
-			$address2  = $this->input->post('address2', true);
-			$address3  = $this->input->post('address3', true);
-			$address4  = $this->input->post('address4', true);
-			$postcode  = $this->input->post('postcode', true);
-
-			//SAVE TO DATABASE
-			$data = array(
-						'printname' => $printname,
-						'housename' => $housename,
-						'addressline1' => $address1,
-						'addressline2' => $address2,
-						'addressline3' => $address3,
-						'addressline4' => $address4,
-						'postcode' => $postcode,				
-						  );
-						  
-			$this->db->insert('address', $data);
-			echo $this->db->insert_id();
+			echo $html;
 		}
 	}
 	

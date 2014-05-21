@@ -11,5 +11,22 @@ Class Address extends CI_Model
   
    return $query->result();
  }
+ 
+ function insertAddress($printname, $housename, $address1, $address2, $address3, $address4, $postcode) 
+ {
+	//SAVE TO DATABASE
+	$data = array(
+				'printname' => $printname,
+				'housename' => $housename,
+				'addressline1' => $address1,
+				'addressline2' => $address2,
+				'addressline3' => $address3,
+				'addressline4' => $address4,
+				'postcode' => $postcode,				
+				  );
+				  
+	 return $this->db->insert('address', $data);
+  }
+
 }
 ?>

@@ -32,7 +32,7 @@ foreach($css_files as $file): ?>
 	});
 	
 	//ADD IN A BUTTON TO ADD TO DROPDOWN	
-	$('#addressid_input_box').append('<a href="<?=site_url()?>/main/address_quick_add" class="fancybox-link fancybox.ajax ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" ><span class="ui-button-text">Add</span></a>');	
+	$('#addressid_input_box').append('<a href="<?=site_url()?>/address_add/popup" class="fancybox-link fancybox.ajax ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" ><span class="ui-button-text">Add</span></a>');	
 
 	
   });
