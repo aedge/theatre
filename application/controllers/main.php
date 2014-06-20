@@ -286,11 +286,19 @@ class Main extends CI_Controller {
 		if($this->session->userdata('logged_in'))
 	    {
 	      
+			if(date('m') < 6){
+				$currentYear = date('Y') - 1;
+			} else {
+				$currentYear = date('Y');
+			}
+	      
 			$result = $this->totals->getPaidTotals();
 			$html = "";
 			if($result){				
 				$html = '<div style="width: 200px; height: 200px; " class="popup" >';
-				$html .= '<table width="100%"><tr><th align="left">Payment Type</th><th align="left">Total</th></tr>';
+				$html .= '<table width="100%">';
+				$html .= '<tr><th colspan="2"><u> Totals for '. $currentYear .'-'. ($currentYear + 1) .'</u></th></tr>';
+				$html .= '<tr><th align="left">Payment Type</th><th align="left">Total</th></tr>';
 				foreach($result as $row){
 					if($row->paymenttype != ""){
 						$html .= '<tr><td align="left">'. $row->paymenttype . '</td><td align="left">' . $row->amountpaid . '</td></tr>';

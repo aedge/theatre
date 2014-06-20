@@ -5,6 +5,23 @@ Class Address extends CI_Model
  {
    if($option == "noemail"){
 		$query = $this -> db -> query('SELECT distinct address.* FROM member, address where member.active and member.email = "" and member.addressid = address.addressid order by member.lastname');
+   } else if($option == "current"){
+		if(date('m') < 6){
+			$searchYear = date('Y') - 1;
+		} else {
+			$searchYear = date('Y');
+		}
+		
+		$query = $this -> db -> query('SELECT distinct address.* FROM member, address where member.active and member.membernum like "'. $searchYear .'%" and member.addressid = address.addressid order by member.lastname');
+   } else if($option == "norenew") {
+		if(date('m') < 6){
+			$searchYear = date('Y') - 1;
+		} else {
+			$searchYear = date('Y');
+		}
+		
+		$query = $this -> db -> query('SELECT distinct address.* FROM member, address where member.active and member.membernum like "'. ($searchYear - 1) .'%" and member.addressid = address.addressid order by member.lastname');
+
    } else {
 		$query = $this -> db -> query('SELECT distinct address.* FROM member, address where member.active and member.addressid = address.addressid order by member.lastname');
    }

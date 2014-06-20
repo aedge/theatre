@@ -28,7 +28,12 @@ foreach($css_files as $file): ?>
 	});
 	$(".fancybox-labels").fancybox({
 		padding: 0,
-		content: '<div class="popup"><span class="popuptitle">Print labels for? </span><a class="labellink" href="<?= site_url() ?>/main/labels/all" > All Members </a><a class="labellink" href="<?= site_url() ?>/main/labels/noemail" > Members without Email Addresses </a></div>',
+		content: '<div class="popup"><span class="popuptitle">Print labels for? </span>' +
+				 '<a class="labellink" href="<?= site_url() ?>/main/labels/all" > All Members </a>' +
+				 '<a class="labellink" href="<?= site_url() ?>/main/labels/noemail" > Members without Email Addresses </a>' +
+				 '<a class="labellink" href="<?= site_url() ?>/main/labels/current" > Members for the current year </a>' +
+				 '<a class="labellink" href="<?= site_url() ?>/main/labels/norenew" > Members that are yet to renew </a>' +
+				 '</div>',
 	});
 	
 	//ADD IN A BUTTON TO ADD TO DROPDOWN	
