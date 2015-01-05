@@ -28,12 +28,15 @@ foreach($css_files as $file): ?>
 	});
 	$(".fancybox-labels").fancybox({
 		padding: 0,
-		content: '<div class="popup"><span class="popuptitle">Print labels for? </span>' +
-				 '<a class="labellink" href="<?= site_url() ?>/main/labels/all" > All Members </a>' +
-				 '<a class="labellink" href="<?= site_url() ?>/main/labels/noemail" > Members without Email Addresses </a>' +
-				 '<a class="labellink" href="<?= site_url() ?>/main/labels/current" > Members for the current year </a>' +
-				 '<a class="labellink" href="<?= site_url() ?>/main/labels/norenew" > Members that are yet to renew </a>' +
-				 '</div>',
+		content: '<div class="labelPopup"><span class="popuptitle">Print Member Labels</span><br/>' +
+				  '<form action="<?=site_url()?>/main/labels" method="post">' +
+				  '<p> Please select options for printing member labels  </p>' + 
+				  '<label>Members with an email address?</label>' +
+				  '<select id="selEmail" name="email" class="labelSelect"><option value="yes">Yes</option><option value="no">No</option><option value="All" selected>Either</option></select><br/>' +
+				  '<label>Members that have renewed?    </label>' +
+				  '<select id="selRenew" name="renew" class="labelSelect"><option value="yes">Yes</option><option value="no">No</option><option value="All" selected>Either</option></select><br/>' +
+				  '<button id="btnPrint" type="submit" class="labelButton"> Print </button>' +
+				  '</div>',
 	});
 	
 	//ADD IN A BUTTON TO ADD TO DROPDOWN	

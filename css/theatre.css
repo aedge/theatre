@@ -224,9 +224,7 @@ body {
 
 .labellink {
 	color: white;
-	display: block;
-	padding: 5px;
-	width: 100%;
+
 }
 
 .labellink:hover{
@@ -239,4 +237,45 @@ body {
 
 .popuptitle {
 	font-weight: bold;
+}
+
+
+.buttonsdiv {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.labelPopup {
+	background-color: #19042D;
+	color: white;
+	font-size: 12pt;
+	padding: 10px;
+}
+
+.labelPopup span {
+	padding-bottom: 10px;
+}
+
+.labelPopup label {
+	color: white;
+	display: block;
+}
+
+.labelSelect {
+	display: block;
+	background-color: #583f70;
+	color: white;
+	padding: 5px;
+	border: 0px;
+}
+
+.labelButton {
+	font-weight: bold;
+	background-color: #583f70;
+	color: white;
+	padding: 10px;
+	border: 0px;
+	width: 75px; 
+	margin-left: 150px; 
+	
 }

@@ -78,7 +78,7 @@ class Main extends CI_Controller {
 		$crud->display_as('initials','Init');
 		$crud->display_as('blacklisted','Black listed');
 				
-		$crud->set_relation('addressid','address','{addressline1}');
+		$crud->set_relation('addressid','address','{housename} {addressline1}');
 		$crud->display_as('addressid','Address');		
 		$crud->set_relation_n_n('Interests','memberinterest','interest','memberid','interestid','description');
 		$crud->add_fields('membernum','title','initials','firstname','lastname','phone','mobile','email','agegroup','addressid','Interests','expirydate','active');
@@ -217,10 +217,10 @@ class Main extends CI_Controller {
         $this->_render_output($output);     
     }
 	
-	public function labels($option) {
+	public function labels() {
 	
 		if($this->session->userdata('logged_in'))
-	    {
+	    {			
 	      $session_data = $this->session->userdata('logged_in');
 	      $data['username'] = $session_data['username'];
 		  $accessLevel = $session_data['accessLevel'];
@@ -230,8 +230,11 @@ class Main extends CI_Controller {
 	     //If no session, redirect to login page
 	     redirect('login', 'refresh');
 	    }
+		
+		$email = $this->input->post('email');
+		$renew = $this->input->post('renew');
 	
-		$addresses = $this->address->getAddresses($option);
+		$addresses = $this->address->getAddresses($email, $renew);
 
 		$this->pdf_label->AddPage();		
 		
@@ -285,7 +288,7 @@ class Main extends CI_Controller {
 		
 		if($this->session->userdata('logged_in'))
 	    {
-	      
+		
 			if(date('m') < 6){
 				$currentYear = date('Y') - 1;
 			} else {

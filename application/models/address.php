@@ -1,31 +1,32 @@
 <?php
 Class Address extends CI_Model
 {
- function getAddresses($option)
+ function getAddresses($email, $renew)
  {
-   if($option == "noemail"){
-		$query = $this -> db -> query('SELECT distinct address.* FROM member, address where member.active and member.email = "" and member.addressid = address.addressid order by member.lastname');
-   } else if($option == "current"){
-		if(date('m') < 6){
-			$searchYear = date('Y') - 1;
-		} else {
-			$searchYear = date('Y');
-		}
-		
-		$query = $this -> db -> query('SELECT distinct address.* FROM member, address where member.active and member.membernum like "'. $searchYear .'%" and member.addressid = address.addressid order by member.lastname');
-   } else if($option == "norenew") {
-		if(date('m') < 6){
-			$searchYear = date('Y') - 1;
-		} else {
-			$searchYear = date('Y');
-		}
-		
-		$query = $this -> db -> query('SELECT distinct address.* FROM member, address where member.active and member.membernum like "'. ($searchYear - 1) .'%" and member.addressid = address.addressid order by member.lastname');
-
-   } else {
-		$query = $this -> db -> query('SELECT distinct address.* FROM member, address where member.active and member.addressid = address.addressid order by member.lastname');
+ 
+   $queryText = 'SELECT distinct address.* FROM member, address where member.active';
+	if(date('m') < 6){
+		$searchYear = date('Y') - 1;
+	} else {
+		$searchYear = date('Y');
+	}
+   
+   if($email == 'yes'){
+		$queryText = $queryText . ' and member.email != "" ';
+   } else if($email == 'no') {
+		$queryText = $queryText . ' and member.email = "" ';
    }
-  
+   
+   if($renew == 'yes'){
+		$queryText = $queryText . ' and member.membernum like "'. $searchYear .'%" ';
+   } else if($renew == 'no') {
+		$queryText = $queryText . ' and member.membernum like "'. ($searchYear - 1) .'%" ';
+   }
+   
+   $queryText = $queryText . ' and member.addressid = address.addressid order by member.lastname';
+   
+   $query = $this -> db -> query($queryText);
+   
    return $query->result();
  }
  
