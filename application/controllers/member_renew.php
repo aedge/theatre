@@ -32,7 +32,7 @@ class member_renew extends CI_Controller {
 			
 			$paymentTypeSelect = $this->buildPaymentTypeSelect();
 			$defaultdate = '';
-			if(date('m') >= 4){
+			if(date('m') >= 7){
 				$defaultdate = '30/06/' . (date('Y') + 1);
 			} else {
 				$defaultdate = '30/06/' . (date('Y'));

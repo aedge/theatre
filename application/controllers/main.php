@@ -64,7 +64,7 @@ class Main extends CI_Controller {
 		$crud->set_Subject('Member');
 		$crud->set_table('member');
 		
-		$crud->columns('membernum','title','initials','firstname','lastname','phone','mobile','email','agegroup','addressid','Interests','expirydate','paymenttype','amountpaid','active');
+		$crud->columns('membernum','patronnumber','title','initials','firstname','lastname','phone','mobile','email','agegroup','addressid','Interests','expirydate','paymenttype','amountpaid','active');
 		
 		$crud->display_as('lastname','Last Name');
 		$crud->display_as('firstname','First Name');
@@ -73,6 +73,7 @@ class Main extends CI_Controller {
 		$crud->display_as('agegroup','Age Group');
 		$crud->display_as('expirydate','Expiry Date');
 		$crud->display_as('membernum','Member Number');
+		$crud->display_as('patronnumber','Patron Number');
 		$crud->display_as('paymenttype','Pay Type');
 		$crud->display_as('amountpaid','Paid');
 		$crud->display_as('initials','Init');
@@ -81,12 +82,16 @@ class Main extends CI_Controller {
 		$crud->set_relation('addressid','address','{housename} {addressline1}');
 		$crud->display_as('addressid','Address');		
 		$crud->set_relation_n_n('Interests','memberinterest','interest','memberid','interestid','description');
-		$crud->add_fields('membernum','title','initials','firstname','lastname','phone','mobile','email','agegroup','addressid','Interests','expirydate','active');
-		$crud->required_fields('firstname','lastname','agegroup','addressid','phone','title');
+		$crud->add_fields('membernum','patronnumber','title','initials','firstname','lastname','phone','mobile','email','agegroup','addressid','Interests','expirydate','active');
+		$crud->edit_fields('membernum','patronnumber','title','initials','firstname','lastname','phone','mobile','email','agegroup','addressid','Interests','expirydate','active');
+		$crud->required_fields('membernum','firstname','lastname','agegroup','addressid','phone','title');
+		
+		$crud->set_rules('membernum', 'Member Number', 'duplicate_check');
+		$crud->set_rules('membernum', 'Member Number', 'required');
 		
 		$crud->callback_before_insert(array($this,'member_insert'));
+		$crud->callback_before_update(array($this,'member_update'));
 		$crud->callback_add_field('expirydate', array($this, 'field_expirydate_add'));
-		$crud->field_type('membernum', 'invisible');
 		
 		$crud->add_action('','/theatre/assets/uploads/general/refresh16.png','member_renew/popup','fancybox-link fancybox.ajax');
 		
@@ -315,30 +320,52 @@ class Main extends CI_Controller {
 	}
 	
 	function member_insert($post_array){
+		
 		$currentYear = strftime("%Y");
 		
 		if(date('m') <= 7){
 			$currentYear = date('Y') - 1;
 		} else {
 			$currentYear = date('Y');
-		}			
-		$this -> db -> select('value');
-		$this -> db -> from('systemparameter');
-		$this -> db -> where('section', 'annual_member_counter');
-		$this -> db -> where('key', $currentYear);
-		$this -> db -> limit(1);
-
-		$query = $this -> db -> get();
-		$nextMemberNumber = $query->row()->value;
-		$nextMemberNumber = $nextMemberNumber + 1;
+		}
+		if($post_array['membernum'] != ""){
+			$post_array["membernum"] = $currentYear . "-" .  $post_array['membernum'];
+		}
 		
-		$this -> db -> query("insert into systemparameter (`section`,`key`,`value`) values ('annual_member_counter','$currentYear','$nextMemberNumber') on duplicate key update `value`='$nextMemberNumber'");
-		
-		$post_array["membernum"] = $currentYear . "-" . sprintf("%04d", $nextMemberNumber);
-	
 		return $post_array;
 	}
 	
+	function member_update($post_array){
+		$found = strpos($post_array["membernum"], "-");
+		if($found === false) {
+			$currentYear = strftime("%Y");
+		
+			if(date('m') <= 7){
+				$currentYear = date('Y') - 1;
+			} else {
+				$currentYear = date('Y');
+			}			
+			if($post_array['membernum'] != ""){
+				$post_array["membernum"] = $currentYear . "-" .  $post_array['membernum'];
+			}
+			return $post_array;
+					
+		}
+	}
+	
+	function duplicate_check($input){
+		$isDuplicate = false;
+		
+		$isDuplicate = $this->member->checkDuplicateMember($input);
+		
+		if($isDuplicate){
+			$this->form_validation->set_message('duplicate_check', 'This member number is already in use');
+			return false;
+		} else {
+			return true;
+		}
+	}
+		
 	function user_insert($post_array){
 		if(!empty($post_array['password'])){
 			$password = $post_array["password"];
