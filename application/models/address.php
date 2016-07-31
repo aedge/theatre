@@ -4,7 +4,7 @@ Class Address extends CI_Model
  function getAddresses($email, $renew)
  {
  
-   $queryText = 'SELECT distinct address.* FROM member, address where member.active';
+   $queryText = 'SELECT distinct address.* FROM member, address where member.memberid > 0';
 	if(date('m') < 6){
 		$searchYear = date('Y') - 1;
 	} else {

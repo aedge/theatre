@@ -21,7 +21,7 @@ Class Member extends CI_Model
 		$currentYear = strftime("%Y");
 		$lastYear = 0;
 		
-		if(date('m') <= 6){
+		if(date('m') < 5){
 			$currentYear = date('Y') - 1;
 		} else {
 			$currentYear = date('Y');
